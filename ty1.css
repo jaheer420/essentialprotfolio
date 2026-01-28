@@ -1,0 +1,48 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  background: black; /* or your theme color */
+}
+
+/* Each iframe wrapper */
+.iframe-section {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* iframe itself */
+.iframe-section iframe {
+  width: 100%;
+  height: 100vh;
+  border: none;
+  display: block;
+}
+
+/* Smooth visual loading */
+.iframe-section.loading {
+  background: black;
+}
+
+/* Optional fade-in */
+.iframe-section.loaded iframe {
+  animation: fadeIn 0.8s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
