@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Cinematic Skills Vortex</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    canvas {
+      display: block;
+      cursor: none;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="c"></canvas>
+
+  <script>
+    const canvas = document.getElementById("c");
+    const ctx = canvas.getContext("2d");
+
+    let w, h, cx, cy;
+    const ATLAS_URL = "sa1.png";
+    const ATLAS2_URL = "sa2.png";
+    const LOGO_COUNT = 6;
+    const skillIcons = [];
+    const finalIcons = [];
+
+    function resize() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+      cx = w / 2;
+      cy = h / 2;
+
+      // ===============================
+      // DUAL ANCHOR SYSTEM
+      // ===============================
+      // GEOMETRIC_CENTER: For physics (particles, black hole)
+      // Uses true mathematical center for radial symmetry
+      GEOMETRIC_CENTER_Y = h / 2;
+
+      // COMPOSITION_CENTER: For visual content (text, icons)
+      // Positioned higher (42%) for optical balance on light backgrounds
+      // Human eye perceives vertical center as slightly above mathematical center
+      COMPOSITION_CENTER_Y = h * 0.42;
+    }
+
+    // Declare anchor variables
+    let GEOMETRIC_CENTER_Y, COMPOSITION_CENTER_Y;
+
+    window.addEventListener("resize", resize);
+    resize();
+
+    // ===============================
+    // CONFIG
+    // ===============================
+    const COUNT = 3200;
+    const INNER_RADIUS = 120;
+    const ABSORB_DURATION = 12000;
+    const ICON_STAGGER = 1400;
+
+    let particles = [];
+    let mouseX = -9999, mouseY = -9999;
+    let curX = -9999, curY = -9999;
+
+    let absorbAll = false;
+    let absorbStartTime = 0;
+    let phase = 0;
+    let energyScale = 1;
+    let energyAlpha = 1;
+
+    // Blast phase state
+    let blastStartTime = 0;
+    let blastRadius = 0;
+    let blastAlpha = 0;
+    let textHeadingAlpha = 0;
+    let textHeadingScale = 1.05;
+    let textSubAlpha = 0;
+
+    // Phase 7 state
+    let phase7StartTime = 0;
+
+    const IS_MOBILE = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    // ===============================
+    // COMPOSITION LAYOUT SYSTEM
+    // All text/icons use COMPOSITION_CENTER_Y as anchor
+    // ===============================
+    const LAYOUT = {
+      // Icon grid dimensions
+      ICON_SIZE: IS_MOBILE ? 70 : 100,
+      GAP_X: IS_MOBILE ? 30 : 50,
+      GAP_Y: IS_MOBILE ? 25 : 40,
+      COLS: 3,
+      ROWS: 2,
+
+      // Vertical offsets from COMPOSITION_CENTER_Y
+      // Negative = above anchor, Positive = below anchor
+      HEADING_OFFSET: IS_MOBILE ? -60 : -80,         // Heading above composition center
+      SUBHEADING_OFFSET: IS_MOBILE ? 0 : 0,          // Subheading AT composition center
+      GRID_CENTER_OFFSET: IS_MOBILE ? 120 : 160      // Grid center well below
+    };
+
+    // Compute grid dimensions for centering
+    LAYOUT.GRID_WIDTH = LAYOUT.COLS * LAYOUT.ICON_SIZE + (LAYOUT.COLS - 1) * LAYOUT.GAP_X;
+    LAYOUT.GRID_HEIGHT = LAYOUT.ROWS * LAYOUT.ICON_SIZE + (LAYOUT.ROWS - 1) * LAYOUT.GAP_Y;
+
+    // ===============================
+    // Atlas Slicing
+    // ===============================
+    function sliceIcons(atlas) {
+      const cols = 3, rows = 2;
+      const cw = atlas.width / cols;
+      const ch = atlas.height / rows;
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const off = document.createElement('canvas');
+          off.width = cw;
+          off.height = ch;
+          const octx = off.getContext('2d');
+
+          octx.drawImage(atlas, c * cw, r * ch, cw, ch, 0, 0, cw, ch);
+
+          skillIcons.push({
+            canvas: off,
+            opacity: 0,
+            scale: 1.4,
+            rotation: Math.random() * 0.5 - 0.25,
+            angle: (skillIcons.length / LOGO_COUNT) * Math.PI * 2,
+            currentRadius: 0
+          });
+        }
+      }
+    }
+
+    function sliceFinalIcons(atlas) {
+      const cols = 3, rows = 2;
+      const cw = atlas.width / cols;
+      const ch = atlas.height / rows;
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const off = document.createElement('canvas');
+          off.width = cw;
+          off.height = ch;
+          const octx = off.getContext('2d');
+
+          octx.drawImage(atlas, c * cw, r * ch, cw, ch, 0, 0, cw, ch);
+
+          finalIcons.push({
+            canvas: off,
+            opacity: 0,
+            scale: 0.8,
+            offsetY: 20
+          });
+        }
+      }
+    }
+
+    // ===============================
+    // Interaction
+    // ===============================
+    canvas.addEventListener("mousemove", e => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      if (curX === -9999) {
+        curX = mouseX;
+        curY = mouseY;
+      }
+    });
+
+    canvas.addEventListener("click", () => {
+      const dx = mouseX - cx;
+      const dy = mouseY - cy;
+      if (Math.sqrt(dx * dx + dy * dy) < INNER_RADIUS && !absorbAll) {
+        absorbAll = true;
+        absorbStartTime = performance.now();
+        phase = 1;
+      }
+    });
+
+    // ===============================
+    // Particle System (UNCHANGED)
+    // ===============================
+    class Particle {
+      constructor() { this.reset(true); }
+      reset(init = false) {
+        if (absorbAll) { this.alpha = 0; return; }
+        this.radius = init ? Math.random() * Math.max(w, h) : Math.max(w, h);
+        this.angle = Math.random() * Math.PI * 2;
+        this.spin = 0.002 + Math.random() * 0.004;
+        this.pull = 0.15 + Math.random() * 0.25;
+        this.size = Math.random() * 3 + 1;
+        this.alpha = 0.2 + Math.random() * 0.5;
+      }
+      update() {
+        this.angle += this.spin;
+        let force = 1;
+        if (absorbAll) {
+          const progress = Math.min((performance.now() - absorbStartTime) / ABSORB_DURATION, 1);
+          force = 4 + progress * progress * 35;
+          if (this.radius < 50) this.alpha *= 0.92;
+        }
+        this.radius -= this.pull * force;
+        if (this.radius < 0 && !absorbAll) this.reset();
+      }
+      draw() {
+        if (this.alpha <= 0) return;
+        const x = cx + Math.cos(this.angle) * this.radius;
+        const y = cy + Math.sin(this.angle) * this.radius;
+        ctx.strokeStyle = `rgba(200,180,255,${this.alpha})`;
+        ctx.strokeRect(x, y, this.size, this.size);
+      }
+    }
+
+    // ===============================
+    // 🔮 ENERGY SPHERE WITH COLOR SHIFT
+    // ===============================
+    function drawBlackHole() {
+      if (phase >= 4) return;
+      const t = performance.now() * 0.001;
+
+      let energy = 0;
+      if (absorbAll) {
+        energy = Math.min(
+          (performance.now() - absorbStartTime) / (ICON_STAGGER * LOGO_COUNT),
+          1
+        );
+      }
+
+      // Color interpolation
+      const r = Math.floor(80 + energy * 140);
+      const g = Math.floor(140 + energy * 40);
+      const b = Math.floor(255 - energy * 80);
+
+      // CORE
+      const core = ctx.createRadialGradient(cx, cy, 0, cx, cy, 45 * energyScale);
+      core.addColorStop(0, `rgba(${r},${g},255,${energyAlpha})`);
+      core.addColorStop(0.4, `rgba(${r},${g},${b},${0.8 * energyAlpha})`);
+      core.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = core;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 45 * energyScale, 0, Math.PI * 2);
+      ctx.fill();
+
+      const ORBITS = 3;
+      const ELECTRONS = 4;
+      const RADIUS = 120 * energyScale;
+
+      for (let i = 0; i < ORBITS; i++) {
+        const orbitAngle = t * 0.4 + i;
+        const scaleY = 0.5 + i * 0.25;
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(orbitAngle);
+        ctx.scale(1, scaleY);
+
+        ctx.strokeStyle = `rgba(${r},${g},255,${0.35 * energyAlpha})`;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, RADIUS, RADIUS, 0, 0, Math.PI * 2);
+        ctx.stroke();
+
+        for (let e = 0; e < ELECTRONS; e++) {
+          const a = t * 1.6 + e * Math.PI * 2 / ELECTRONS;
+          const x = Math.cos(a) * RADIUS;
+          const y = Math.sin(a) * RADIUS;
+
+          const g2 = ctx.createRadialGradient(x, y, 0, x, y, 6 * energyScale);
+          g2.addColorStop(0, `rgba(${r},${g},255,${energyAlpha})`);
+          g2.addColorStop(1, "rgba(255,255,255,0)");
+
+          ctx.fillStyle = g2;
+          ctx.beginPath();
+          ctx.arc(x, y, 6 * energyScale, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+    }
+
+    function updateIcons() {
+      if (!absorbAll) return;
+      const elapsed = performance.now() - absorbStartTime;
+      const orbitRadius = Math.min(w, h) * (IS_MOBILE ? 0.38 : 0.33);
+
+      skillIcons.forEach((icon, i) => {
+        if (elapsed > i * ICON_STAGGER) {
+          if (phase === 1) {
+            icon.opacity += (1 - icon.opacity) * 0.04;
+            icon.currentRadius += (orbitRadius - icon.currentRadius) * 0.04;
+            icon.rotation *= 0.95;
+          } else if (phase === 2) {
+            icon.angle += 0.04;
+            icon.currentRadius *= 0.97;
+            icon.opacity *= 0.97;
+          }
+
+          if (icon.opacity > 0.01) {
+            const x = cx + Math.cos(icon.angle) * icon.currentRadius;
+            const y = cy + Math.sin(icon.angle) * icon.currentRadius;
+            const size = Math.min(w, h) * (IS_MOBILE ? 0.22 : 0.16);
+
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(icon.rotation);
+            ctx.globalAlpha = icon.opacity * 0.6;
+            ctx.drawImage(icon.canvas, -size / 2, -size / 2, size, size);
+            ctx.restore();
+          }
+        }
+      });
+    }
+
+    function drawCursor() {
+      if (phase >= 4 || mouseX < 0) return;
+      curX += (mouseX - curX) * 0.15;
+      curY += (mouseY - curY) * 0.15;
+      ctx.beginPath();
+      ctx.arc(curX, curY, 4, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(220,200,255,0.95)";
+      ctx.fill();
+    }
+
+    // ===============================
+    // ✨ CINEMATIC BLAST PHASE
+    // ===============================
+    function easeOutQuart(t) {
+      return 1 - Math.pow(1 - t, 4);
+    }
+
+    function easeOutCubic(t) {
+      return 1 - Math.pow(1 - t, 3);
+    }
+
+    // ===============================
+    // TRANSFORM-SAFE COMPOSITION HELPERS
+    // ===============================
+
+    /**
+     * Draws text with scale animation around its visual center.
+     * Scale is applied BEFORE translation to maintain optical centering.
+     * The text is drawn at (0,0) after transforms, ensuring the pivot is correct.
+     */
+    function drawScaledText(text, x, y, scale, alpha, font, fillStyle, shadowColor, shadowBlur) {
+      ctx.save();
+      // Reset to identity matrix for clean composition
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+      // Translate to target position FIRST
+      ctx.translate(x, y);
+      // Scale around THIS point (the text center)
+      ctx.scale(scale, scale);
+
+      ctx.globalAlpha = alpha;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = font;
+      ctx.fillStyle = fillStyle;
+
+      if (shadowColor && shadowBlur) {
+        ctx.shadowColor = shadowColor;
+        ctx.shadowBlur = shadowBlur;
+      }
+
+      // Draw at origin - transforms handle positioning
+      ctx.fillText(text, 0, 0);
+      ctx.restore();
+    }
+
+    /**
+     * Draws an icon with scale animation around its visual center.
+     * Ensures scale pivot is at icon center, not corner.
+     */
+    function drawScaledIcon(iconCanvas, x, y, size, scale, alpha) {
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+      // Translate to icon CENTER position
+      ctx.translate(x, y);
+      // Scale around this center point
+      ctx.scale(scale, scale);
+
+      ctx.globalAlpha = alpha;
+
+      // No shadows
+      ctx.shadowColor = "transparent";
+      ctx.shadowBlur = 0;
+
+      // Draw icon centered at origin
+      ctx.drawImage(iconCanvas, -size / 2, -size / 2, size, size);
+      ctx.restore();
+    }
+
+    /**
+     * Draws the shared composition elements (heading + subheading).
+     * Used by both Phase 6 and Phase 7 for guaranteed consistency.
+     */
+    function drawCompositionText(headingScale, headingAlpha, subAlpha) {
+      const headingY = COMPOSITION_CENTER_Y + LAYOUT.HEADING_OFFSET;
+      const subY = COMPOSITION_CENTER_Y + LAYOUT.SUBHEADING_OFFSET;
+      const headingFont = `900 ${IS_MOBILE ? 48 : 80}px 'Inter', sans-serif`;
+      const subFont = `500 ${IS_MOBILE ? 16 : 22}px 'Inter', sans-serif`;
+
+      // Heading with scale animation
+      drawScaledText(
+        "Skills",
+        cx, headingY,
+        headingScale, headingAlpha,
+        headingFont, "#FFD700",
+        "rgba(255, 200, 50, 0.6)", 20
+      );
+
+      // Subheading (no scale, just fade)
+      drawScaledText(
+        "AI can't replace your creativity.",
+        cx, subY,
+        1, subAlpha,
+        subFont, "#333",
+        null, 0
+      );
+    }
+
+    function drawBlastPhase() {
+      const elapsed = performance.now() - blastStartTime;
+      const maxRadius = Math.sqrt(w * w + h * h);
+
+      // Phase 4: Radial white energy burst expanding
+      if (phase === 4) {
+        const expandDuration = 1200;
+        const progress = Math.min(elapsed / expandDuration, 1);
+        const eased = easeOutQuart(progress);
+
+        blastRadius = eased * maxRadius;
+        blastAlpha = 0.3 + eased * 0.7;
+
+        // Black base
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, w, h);
+
+        // Radial white glow expanding from center
+        const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, blastRadius);
+        gradient.addColorStop(0, `rgba(255,255,255,${blastAlpha})`);
+        gradient.addColorStop(0.3, `rgba(255,255,255,${blastAlpha * 0.9})`);
+        gradient.addColorStop(0.7, `rgba(255,255,255,${blastAlpha * 0.5})`);
+        gradient.addColorStop(1, "rgba(255,255,255,0)");
+
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, w, h);
+
+        // Transition to phase 5 when expansion complete
+        if (progress >= 1) {
+          phase = 5;
+          blastStartTime = performance.now();
+        }
+      }
+
+      // Phase 5: Full white hold with subtle vignette fade
+      else if (phase === 5) {
+        const holdDuration = 500;
+        const progress = Math.min(elapsed / holdDuration, 1);
+
+        // Pure white with subtle vignette
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, w, h);
+
+        // Subtle warm vignette
+        const vignette = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxRadius * 0.8);
+        vignette.addColorStop(0, "rgba(255,255,255,0)");
+        vignette.addColorStop(1, `rgba(255,250,240,${0.1 * (1 - progress)})`);
+        ctx.fillStyle = vignette;
+        ctx.fillRect(0, 0, w, h);
+
+        if (progress >= 1) {
+          phase = 6;
+          blastStartTime = performance.now();
+        }
+      }
+
+      // Phase 6: Text reveal
+      else if (phase === 6) {
+        const headingDelay = 0;
+        const headingDuration = 800;
+        const subDelay = 400;
+        const subDuration = 600;
+        const phase6Duration = 1800;
+
+        // White background
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, w, h);
+
+        // Heading animation
+        const headingElapsed = Math.max(0, elapsed - headingDelay);
+        const headingProgress = Math.min(headingElapsed / headingDuration, 1);
+        const headingEased = easeOutQuart(headingProgress);
+
+        textHeadingAlpha = headingEased;
+        textHeadingScale = 1.05 - (0.05 * headingEased);
+
+        // Subheading animation
+        const subElapsed = Math.max(0, elapsed - subDelay);
+        const subProgress = Math.min(subElapsed / subDuration, 1);
+        textSubAlpha = easeOutQuart(subProgress);
+
+        // ===============================
+        // TRANSFORM-SAFE COMPOSITION
+        // Uses shared helper for phase consistency
+        // ===============================
+        drawCompositionText(textHeadingScale, textHeadingAlpha, textSubAlpha);
+
+        // Transition to phase 7
+        if (elapsed >= phase6Duration) {
+          phase = 7;
+          phase7StartTime = performance.now();
+        }
+      }
+
+      // Phase 7: Final skill icons grid reveal
+      else if (phase === 7) {
+        const elapsed7 = performance.now() - phase7StartTime;
+        const iconDelay = 400;
+        const iconStagger = 350;
+        const iconDuration = 600;
+
+        // White background
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, w, h);
+
+        // ===============================
+        // TRANSFORM-SAFE COMPOSITION (identical to Phase 6)
+        // ===============================
+        drawCompositionText(1, 1, 1);  // Fully visible, no animation
+
+        // ===============================
+        // GRID: Scale-safe icon rendering
+        // Each icon scales around its own center
+        // ===============================
+        const gridCenterY = COMPOSITION_CENTER_Y + LAYOUT.GRID_CENTER_OFFSET;
+        const gridTopY = gridCenterY - LAYOUT.GRID_HEIGHT / 2;
+        const gridLeftX = cx - LAYOUT.GRID_WIDTH / 2;
+
+        finalIcons.forEach((icon, i) => {
+          const col = i % LAYOUT.COLS;
+          const row = Math.floor(i / LAYOUT.COLS);
+          const iconElapsed = Math.max(0, elapsed7 - iconDelay - i * iconStagger);
+          const progress = Math.min(iconElapsed / iconDuration, 1);
+          const eased = easeOutCubic(progress);
+
+          const opacity = eased;
+          const scale = 0.8 + 0.2 * eased;
+          const offsetY = 20 * (1 - eased);
+
+          // Compute FINAL resting position (no offset)
+          // Then add offset for animation - this keeps scale pivot stable
+          const finalX = gridLeftX + col * (LAYOUT.ICON_SIZE + LAYOUT.GAP_X) + LAYOUT.ICON_SIZE / 2;
+          const finalY = gridTopY + row * (LAYOUT.ICON_SIZE + LAYOUT.GAP_Y) + LAYOUT.ICON_SIZE / 2;
+
+          // Animate position, but scale always pivots around final center
+          drawScaledIcon(
+            icon.canvas,
+            finalX,
+            finalY + offsetY,
+            LAYOUT.ICON_SIZE,
+            scale,
+            opacity
+          );
+        });
+      }
+    }
+
+    function animate() {
+      // Cinematic blast phases (4, 5, 6, 7)
+      if (phase >= 4) {
+        drawBlastPhase();
+        requestAnimationFrame(animate);
+        return;
+      }
+
+      ctx.fillStyle = "rgba(0,0,0,0.3)";
+      ctx.fillRect(0, 0, w, h);
+
+      updateIcons();
+      particles.forEach(p => { p.update(); p.draw(); });
+      drawBlackHole();
+      drawCursor();
+
+      if (phase === 1) {
+        const allCubesGone = particles.every(p => p.alpha < 0.01);
+        if (allCubesGone) phase = 2;
+      } else if (phase === 2) {
+        const allIconsGone = skillIcons.every(icon => icon.opacity < 0.01);
+        if (allIconsGone) phase = 3;
+      } else if (phase === 3) {
+        energyScale *= 0.96;
+        energyAlpha *= 0.96;
+        if (energyAlpha < 0.01) {
+          phase = 4;
+          blastStartTime = performance.now();
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    // Load both atlases
+    const atlas = new Image();
+    const atlas2 = new Image();
+    let atlasLoaded = false;
+    let atlas2Loaded = false;
+
+    function tryStart() {
+      if (atlasLoaded && atlas2Loaded) {
+        sliceIcons(atlas);
+        sliceFinalIcons(atlas2);
+        for (let i = 0; i < COUNT; i++) particles.push(new Particle());
+        animate();
+      }
+    }
+
+    atlas.onload = () => { atlasLoaded = true; tryStart(); };
+    atlas2.onload = () => { atlas2Loaded = true; tryStart(); };
+
+    atlas.src = ATLAS_URL;
+    atlas2.src = ATLAS2_URL;
+  </script>
+</body>
+
+</html>
