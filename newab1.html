@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>About Me | Abdul Jaheer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at center, #ffffff 100%);
+        }
+
+        /* Fullscreen Container */
+        .about-wrapper {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            /* vertical center */
+            justify-content: flex-start;
+            /* move content to left */
+            padding-left: 6vw;
+            /* distance from left edge */
+        }
+
+        /* Canvas */
+        canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Overlay Content */
+        .content {
+            position: relative;
+            z-index: 2;
+            max-width: 520px;
+            /* tighter width */
+            width: 100%;
+            padding: 20px;
+        }
+
+        .text {
+            max-width: 520px;
+            animation: fadeUp 1.4s ease forwards;
+        }
+
+        .text h1 {
+            font-size: clamp(2.5rem, 4vw, 4rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .text h1 span {
+            background: linear-gradient(90deg, #0ea5e9, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .text p {
+            font-size: 1.05rem;
+            color: #333;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+
+        .badges {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 10px 16px;
+            border-radius: 14px;
+            background: rgba(0, 0, 0, 0.06);
+            backdrop-filter: blur(8px);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 900px) {
+            .content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <section class="about-wrapper">
+        <canvas id="seqCanvas"></canvas>
+
+        <div class="content">
+            <div class="text">
+                <h1>Hi, You Want to<br><span>Know About Me </span></h1>
+                <p>
+                    Hi, I’m <strong>Abdul Jaheer</strong> — a creative Ai-Integreted web developer who
+                    blends clean design with cinematic animations to build modern,
+                    meaningful digital experiences.
+                </p>
+
+
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const canvas = document.getElementById("seqCanvas");
+        const ctx = canvas.getContext("2d");
+
+        let width, height;
+        function resize() {
+            width = canvas.width = window.innerWidth * devicePixelRatio;
+            height = canvas.height = window.innerHeight * devicePixelRatio;
+            ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+        }
+        window.addEventListener("resize", resize);
+        resize();
+
+        // ===== IMAGE SEQUENCE CONFIG =====
+        const frameCount = 80;
+        const images = [];
+        let loaded = 0;
+        let frame = 0;
+
+        // ===== FPS CONTROL =====
+        const fps = 15;
+        const frameInterval = 1000 / fps;
+        let lastTime = 0;
+
+        function getFramePath(i) {
+            return `ab/frames/Whisk_gtn3mdomzwm0qjm00cz3iwotu2nlrtl2m2yz0ym (1)_${String(i).padStart(3, "0")}.jpg`;
+        }
+
+        // Preload images
+        for (let i = 0; i < frameCount; i++) {
+            const img = new Image();
+            img.src = getFramePath(i);
+            img.onload = () => loaded++;
+            images.push(img);
+        }
+
+        function draw() {
+            const img = images[frame];
+            if (!img || !img.complete) return;
+
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, width, height);
+
+            const scale = Math.max(
+                window.innerWidth / img.width,
+                window.innerHeight / img.height
+            );
+
+            const x = (window.innerWidth - img.width * scale) / 2;
+            const y = (window.innerHeight - img.height * scale) / 2;
+
+            ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+        }
+
+        function animate(timestamp) {
+            requestAnimationFrame(animate);
+
+            if (!lastTime) lastTime = timestamp;
+            const elapsed = timestamp - lastTime;
+
+            if (elapsed >= frameInterval && loaded > 0) {
+                draw();
+                frame = (frame + 1) % frameCount;
+                lastTime = timestamp - (elapsed % frameInterval);
+            }
+        }
+
+        requestAnimationFrame(animate);
+    </script>
+
+</body>
+
+</html>

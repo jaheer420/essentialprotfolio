@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact | Professional</title>
+    <!-- Fonts: DM Sans for modern, clean look -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- THEME VARIABLES --- */
+        :root {
+            --bg-main: #FDFCF8;
+            /* Soft Off-White */
+            --green-deep: #064E3B;
+            /* Deep Emerald/Forest */
+            --green-accent: #10B981;
+            /* Vibrant Mint/Emerald */
+            --green-light: #D1FAE5;
+            /* Soft Mint Background */
+            --text-dark: #1F2937;
+            /* Near Black */
+            --text-muted: #6B7280;
+            /* Grey */
+            --white: #FFFFFF;
+
+            --card-shadow: 0 10px 30px -5px rgba(6, 78, 59, 0.1);
+            --card-hover: 0 20px 40px -5px rgba(6, 78, 59, 0.15);
+            --radius: 16px;
+        }
+
+        /* --- RESET --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            line-height: 1.5;
+        }
+
+        /* --- MAIN LAYOUT --- */
+        .contact-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            /* Intro | Cards */
+            gap: 4rem;
+            align-items: center;
+            opacity: 0;
+            animation: fadeIn 1s ease-out forwards;
+        }
+
+        /* --- LEFT SIDE: INTRO --- */
+        .intro-section {
+            padding-right: 2rem;
+        }
+
+        .section-label {
+            display: inline-block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--green-accent);
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-left: 3rem;
+        }
+
+        .section-label::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 2rem;
+            height: 1px;
+            background: var(--green-accent);
+        }
+
+        h1.headline {
+            font-family: 'Playfair Display', serif;
+            /* Elegant Serif for Title */
+            font-size: 3.5rem;
+            color: var(--green-deep);
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        p.subtext {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            max-width: 90%;
+        }
+
+        .profile-mini {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--white);
+            border-radius: 50px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            width: fit-content;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--green-accent);
+            border-radius: 50%;
+            box-shadow: 0 0 0 3px var(--green-light);
+        }
+
+        .status-text {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--green-deep);
+        }
+
+        /* --- RIGHT SIDE: CONTACT CARDS --- */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .contact-card {
+            background: var(--white);
+            padding: 2.5rem 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--card-hover);
+            border-color: var(--green-light);
+        }
+
+        /* Card Icon Wrapper */
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            background: var(--green-light);
+            color: var(--green-deep);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .contact-card:hover .icon-box {
+            background: var(--green-deep);
+            color: var(--white);
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .card-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        /* Specific Layouts */
+        .card-full {
+            grid-column: span 2;
+            flex-direction: row;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .card-full .icon-box {
+            margin-bottom: 0;
+        }
+
+        /* Decoration Circle */
+        .decoration-circle {
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--bg-main);
+            opacity: 0;
+            transition: 0.4s ease;
+        }
+
+        .contact-card:hover .decoration-circle {
+            opacity: 0.5;
+            transform: scale(1.5);
+        }
+
+        /* External Link Arrow */
+        .link-arrow {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            color: var(--green-accent);
+            opacity: 0;
+            transform: translate(-5px, 5px);
+            transition: 0.3s ease;
+        }
+
+        .contact-card:hover .link-arrow {
+            opacity: 1;
+            transform: translate(0, 0);
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 992px) {
+            .contact-wrapper {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+                max-width: 600px;
+            }
+
+            .intro-section {
+                padding-right: 0;
+                text-align: center;
+            }
+
+            .section-label {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .section-label::before {
+                display: none;
+            }
+
+            .profile-mini {
+                margin: 0 auto;
+            }
+
+            .subtext {
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-full {
+                grid-column: span 1;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0;
+            }
+
+            .card-full .icon-box {
+                margin-bottom: 1.5rem;
+            }
+
+            h1.headline {
+                font-size: 2.5rem;
+            }
+
+            body {
+                padding: 1.5rem;
+            }
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Stagger */
+        .contact-card {
+            opacity: 0;
+            animation: slideUp 0.6s ease-out forwards;
+        }
+
+        .contact-card:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+
+        .contact-card:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .contact-card:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .contact-card:nth-child(4) {
+            animation-delay: 0.5s;
+        }
+
+        .contact-card:nth-child(5) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="contact-wrapper">
+
+        <!-- INTRO BLOCK -->
+        <section class="intro-section">
+            <span class="section-label">Contact</span>
+            <h1 class="headline">Let's start a conversation.</h1>
+            <p class="subtext">
+                I’m always open to discussing product design work, partnerships, or full-time opportunities.
+            </p>
+
+            <div class="profile-mini">
+                <div class="status-dot"></div>
+                <span class="status-text">Open to new projects</span>
+            </div>
+        </section>
+
+        <!-- CARDS BLOCK -->
+        <section class="cards-grid">
+
+            <!-- Email -->
+            <a href="mailto:abduljaheer142@gmail.com" class="contact-card card-full">
+                <div class="icon-box"><i class="fa-regular fa-envelope"></i></div>
+                <div>
+                    <div class="card-label">Email Me</div>
+                    <div class="card-value">abduljaheer142@gmail.com</div>
+                </div>
+                <div class="decoration-circle"></div>
+                <i class="fa-solid fa-arrow-right link-arrow"></i>
+            </a>
+
+            <!-- Phone -->
+            <a href="tel:+916369697149" class="contact-card">
+                <div class="icon-box"><i class="fa-solid fa-phone"></i></div>
+                <div>
+                    <div class="card-label">Call</div>
+                    <div class="card-value">6369 697 149</div>
+                </div>
+                <div class="decoration-circle"></div>
+            </a>
+
+            <!-- WhatsApp -->
+            <a href="https://wa.me/916369697149" target="_blank" class="contact-card">
+                <div class="icon-box"><i class="fa-brands fa-whatsapp"></i></div>
+                <div>
+                    <div class="card-label">WhatsApp</div>
+                    <div class="card-value">Chat Now</div>
+                </div>
+                <div class="decoration-circle"></div>
+                <i class="fa-solid fa-arrow-right link-arrow"></i>
+            </a>
+
+            <!-- LinkedIn -->
+            <a href="https://www.linkedin.com/in/abduljaheer142" target="_blank" class="contact-card">
+                <div class="icon-box"><i class="fa-brands fa-linkedin-in"></i></div>
+                <div>
+                    <div class="card-label">LinkedIn</div>
+                    <div class="card-value">@abduljaheer142</div>
+                </div>
+                <div class="decoration-circle"></div>
+                <i class="fa-solid fa-arrow-right link-arrow"></i>
+            </a>
+
+            <!-- GitHub -->
+            <a href="https://github.com/jaheer420" target="_blank" class="contact-card">
+                <div class="icon-box"><i class="fa-brands fa-github"></i></div>
+                <div>
+                    <div class="card-label">GitHub</div>
+                    <div class="card-value">@jaheer420</div>
+                </div>
+                <div class="decoration-circle"></div>
+                <i class="fa-solid fa-arrow-right link-arrow"></i>
+            </a>
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>

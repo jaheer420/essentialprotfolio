@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio | Editorial Design</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- DESIGN VARIABLES --- */
+        :root {
+            /* Palette matched to warm/golden yellow request */
+            --yellow-main: #FFC805;
+            --yellow-dark: #EAB308;
+            --charcoal: #1A1A1A;
+            --grey-dark: #2A2A2A;
+            --grey-light: #404040;
+            --white: #FFFFFF;
+            --accent-orange: #FF5E1A;
+            --text-muted: #A3A3A3;
+
+            /* Spacing & Sizes */
+            --container-width: 1200px;
+            --radius-md: 4px;
+            /* Editorial often uses sharp or slightly rounded corners */
+            --radius-lg: 12px;
+        }
+
+        /* --- RESET & BASE --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--yellow-main);
+            color: var(--charcoal);
+            font-family: 'Space Grotesk', sans-serif;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            border-top: 10px solid var(--charcoal);
+            /* Top framing */
+            border-bottom: 10px solid var(--charcoal);
+            /* Bottom framing */
+            min-height: 100vh;
+        }
+
+        /* --- LAYOUT UTILITIES --- */
+        .container {
+            max-width: var(--container-width);
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* --- HEADER SECTION --- */
+        header.page-header {
+            padding: 6rem 0 4rem;
+            position: relative;
+            /* Subtle grid background pattern on yellow */
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .header-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            align-items: end;
+            border-bottom: 3px solid var(--charcoal);
+            padding-bottom: 2rem;
+        }
+
+        h1.page-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(4rem, 8vw, 7rem);
+            font-weight: 800;
+            text-transform: uppercase;
+            line-height: 0.85;
+            letter-spacing: -2px;
+            color: var(--charcoal);
+            margin-left: -5px;
+            /* Visual alignment */
+        }
+
+        .page-subtitle {
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: right;
+            padding-bottom: 1rem;
+            border-left: 3px solid var(--charcoal);
+            padding-left: 1.5rem;
+            height: 100%;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+        }
+
+        /* --- MAIN PROJECTS GRID --- */
+        .projects-wrapper {
+            padding: 4rem 0;
+            display: grid;
+            gap: 2rem;
+            /* Gap between project rows */
+        }
+
+        /* --- EDITORIAL PROJECT CARD --- */
+        .project-row {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            /* Number column + Content column */
+            background: var(--charcoal);
+            color: var(--white);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.15);
+            /* Hard shadow for editorial feel */
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            position: relative;
+        }
+
+        .project-row:hover {
+            transform: translateY(-5px);
+            box-shadow: 15px 15px 0px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Number Column */
+        .project-index {
+            background: var(--grey-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--yellow-dark);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            padding: 1rem 0;
+        }
+
+        /* Content Area */
+        .project-content {
+            padding: 2.5rem 3rem;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            /* Description vs Meta */
+            gap: 3rem;
+        }
+
+        /* Left Side: Title & Desc */
+        .project-main {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .project-type {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-orange);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .project-type::before {
+            content: '';
+            display: block;
+            width: 30px;
+            height: 2px;
+            background: var(--accent-orange);
+        }
+
+        h2.project-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            color: var(--white);
+        }
+
+        p.project-desc {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            max-width: 90%;
+        }
+
+        /* Right Side: Tech & Link */
+        .project-meta {
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            padding-left: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .tech-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--white);
+            opacity: 0.5;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .tag {
+            font-size: 0.8rem;
+            padding: 0.3rem 0.8rem;
+            background: var(--grey-dark);
+            border: 1px solid var(--grey-light);
+            border-radius: 4px;
+            color: var(--white);
+            transition: 0.3s;
+        }
+
+        .project-row:hover .tag {
+            border-color: var(--white);
+        }
+
+        /* Button */
+        .btn-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            background: var(--yellow-main);
+            color: var(--charcoal);
+            text-decoration: none;
+            font-weight: 700;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-md);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            margin-top: auto;
+            /* Push to bottom if needed */
+        }
+
+        .btn-link:hover {
+            background: var(--white);
+            transform: translateX(5px);
+        }
+
+        /* --- DECORATIVE ELEMENTS --- */
+        .decoration-line {
+            width: 100%;
+            height: 1px;
+            background: var(--charcoal);
+            margin: 2rem 0;
+            opacity: 0.2;
+        }
+
+        /* --- RESPONSIVE DESIGN --- */
+        @media (max-width: 992px) {
+            .header-content {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .page-subtitle {
+                text-align: left;
+                justify-content: flex-start;
+                border-left: none;
+                border-top: 3px solid var(--charcoal);
+                padding-top: 1rem;
+                padding-left: 0;
+            }
+
+            .project-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                padding: 2rem;
+            }
+
+            .project-meta {
+                border-left: none;
+                padding-left: 0;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                padding-top: 2rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 0 1.5rem;
+            }
+
+            h1.page-title {
+                font-size: 3.5rem;
+            }
+
+            .project-row {
+                grid-template-columns: 1fr;
+                /* Remove number sidebar on mobile */
+            }
+
+            .project-index {
+                display: none;
+            }
+
+            .project-content {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Header -->
+        <header class="page-header">
+            <div class="header-content">
+                <h1 class="page-title">Selected<br>Works_</h1>
+                <div class="page-subtitle">
+                    Developer & Designer<br>Portfolio 2026
+                </div>
+            </div>
+        </header>
+
+        <!-- Projects List -->
+        <div class="projects-wrapper">
+
+            <!-- 1. Online Bike Store -->
+            <article class="project-row">
+                <div class="project-index">01</div>
+                <div class="project-content">
+                    <div class="project-main">
+                        <span class="project-type">College Project</span>
+                        <h2 class="project-title">Online Bike Store</h2>
+                        <p class="project-desc">
+                            A dynamic e-commerce platform where users can browse catalog, customize specs, and order
+                            bikes online. Features real-time price calculation and secure payment integration.
+                        </p>
+                    </div>
+                    <div class="project-meta">
+                        <div>
+                            <span class="tech-label">Tools Used</span>
+                            <div class="tech-tags">
+                                <span class="tag">HTML</span>
+                                <span class="tag">CSS</span>
+                                <span class="tag">JavaScript</span>
+                                <span class="tag">PHP</span>
+                                <span class="tag">MySQL</span>
+                            </div>
+                        </div>
+                        <a href="https://github.com/jaheer420/online-bike-selling" target="_blank" class="btn-link">
+                            View Source <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 2. Applicant Shortlisting -->
+            <article class="project-row">
+                <div class="project-index">02</div>
+                <div class="project-content">
+                    <div class="project-main">
+                        <span class="project-type">Freelance Project</span>
+                        <h2 class="project-title">Applicant Shortlisting</h2>
+                        <p class="project-desc">
+                            Streamlined recruitment tool enabling HR teams to shortlist resumes efficiently. Applicants
+                            can easily create profiles and upload credentials securely.
+                        </p>
+                    </div>
+                    <div class="project-meta">
+                        <div>
+                            <span class="tech-label">Tools Used</span>
+                            <div class="tech-tags">
+                                <span class="tag">HTML</span>
+                                <span class="tag">CSS</span>
+                                <span class="tag">JavaScript</span>
+                                <span class="tag">PHP</span>
+                                <span class="tag">MySQL</span>
+                            </div>
+                        </div>
+                        <a href="https://github.com/jaheer420/Spheroid-Draft" target="_blank" class="btn-link">
+                            View Source <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 3. Food & Fitness -->
+            <article class="project-row">
+                <div class="project-index">03</div>
+                <div class="project-content">
+                    <div class="project-main">
+                        <span class="project-type">Full-Stack Project</span>
+                        <h2 class="project-title">Food & Fitness Tracker</h2>
+                        <p class="project-desc">
+                            Intelligent diet recommender system. Users log daily intake to track calories/macros, and
+                            get personalized food suggestions to meet fitness goals.
+                        </p>
+                    </div>
+                    <div class="project-meta">
+                        <div>
+                            <span class="tech-label">Tools Used</span>
+                            <div class="tech-tags">
+                                <span class="tag">React.js</span>
+                                <span class="tag">Python</span>
+                                <span class="tag">Flask</span>
+                                <span class="tag">MySQL</span>
+                            </div>
+                        </div>
+                        <a href="https://github.com/jaheer420/new-physique-needs" target="_blank" class="btn-link">
+                            View Source <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 4. Crop Yield Prediction -->
+            <article class="project-row">
+                <div class="project-index">04</div>
+                <div class="project-content">
+                    <div class="project-main">
+                        <span class="project-type">Ongoing ML Project</span>
+                        <h2 class="project-title">Crop Yield Prediction</h2>
+                        <p class="project-desc">
+                            Data-driven agriculture solution predicting crop yields based on environmental factors using
+                            machine learning models and historical data analysis.
+                        </p>
+                    </div>
+                    <div class="project-meta">
+                        <div>
+                            <span class="tech-label">Tools Used</span>
+                            <div class="tech-tags">
+                                <span class="tag">Python</span>
+                                <span class="tag">Machine Learning</span>
+                                <span class="tag">Data Analysis</span>
+                            </div>
+                        </div>
+                        <!-- Provide placeholder button or text if no link, but keeping layout consistent -->
+                        <span class="btn-link"
+                            style="opacity: 0.5; background: var(--grey-dark); color: white; cursor: default;">
+                            In Progress <i class="fa-solid fa-clock"></i>
+                        </span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 5. Peer Storage Share -->
+            <article class="project-row">
+                <div class="project-index">05</div>
+                <div class="project-content">
+                    <div class="project-main">
+                        <span class="project-type">Concept Layout</span>
+                        <h2 class="project-title">Peer Storage Share</h2>
+                        <p class="project-desc">
+                            A decentralized concept platform where users can securely request unused digital storage
+                            from peers or share their own excess capacity.
+                        </p>
+                    </div>
+                    <div class="project-meta">
+                        <div>
+                            <span class="tech-label">Tools Used</span>
+                            <div class="tech-tags">
+                                <span class="tag">System Design</span>
+                                <span class="tag">Security</span>
+                                <span class="tag">Cloud</span>
+                            </div>
+                        </div>
+                        <span class="btn-link"
+                            style="opacity: 0.5; background: var(--grey-dark); color: white; cursor: default;">
+                            Concept Phase <i class="fa-solid fa-lightbulb"></i>
+                        </span>
+                    </div>
+                </div>
+            </article>
+
+        </div>
+
+        <!-- Footer / End Mark -->
+        <div style="text-align: center; padding-bottom: 4rem; opacity: 0.5; font-weight: 600;">
+            /// END OF SELECTED WORKS
+        </div>
+
+    </div>
+
+    <!-- Entrance Animation Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const projects = document.querySelectorAll('.project-row');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '50px'
+            });
+
+            projects.forEach((project, index) => {
+                project.style.opacity = '0';
+                project.style.transform = 'translateY(50px)';
+                project.style.transitionDelay = `${index * 0.1}s`; // Stagger effect
+                observer.observe(project);
+            });
+        });
+    </script>
+</body>
+
+</html>

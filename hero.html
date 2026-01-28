@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Hero Section</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+
+    <!-- Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            yellow: '#facc15', // Tailwind yellow-400
+                            black: '#000000',
+                            white: '#ffffff',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* 1. MANDATORY FIX: Disable native scrolling COMPLETELY */
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            /* No native scrollbars allowed */
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        /* CUSTOM HOVER EFFECT */
+        .name-gradient {
+            background-image: linear-gradient(to right, #facc15, #fde047, #facc15);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: #000000;
+            -webkit-text-fill-color: #000000;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .name-gradient:hover {
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* 3. VIRTUAL SECTIONS: Absolute positioning */
+        .section-container {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100vh;
+            /* Animation config */
+            transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1.000), opacity 1s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+            will-change: transform, opacity;
+
+            /* 4. VISIBILITY GUARD: Default hidden state */
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* ACTIVE STATE: The ONE visible section */
+        .section-active {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        /* HIDDEN STATES */
+        .section-hidden-up {
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .section-hidden-down {
+            transform: translateY(100%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* --- NEW ANIMATION CLASSES (Split + Zoom) --- */
+
+        /* Override Hero Container Exit: No slide up, just fade (split handles movement) */
+        #hero-section.hero-split-exit {
+            transform: translateY(0) !important;
+            /* Stay in place, let inner parts move */
+            opacity: 0 !important;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* Override AI Container Entry: Zoom In instead of Slide Up */
+        #ai-section.ai-zoom-enter {
+            transform: scale(1.15) !important;
+            /* Start Zoomed In */
+            opacity: 0 !important;
+            z-index: 10;
+        }
+
+        /* When AI becomes active, it naturally transitions to section-active (scale 1) */
+
+        /* Inner Content Transitions */
+        #hero-left-col,
+        #hero-right-col {
+            transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1.000), opacity 1.2s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+            will-change: transform, opacity;
+        }
+
+        /* Left Column Exit */
+        .hero-exit-left {
+            transform: translateX(-120%);
+            opacity: 0;
+        }
+
+        /* Right Column Exit */
+        .hero-exit-right {
+            transform: translateX(120%) scale(0.9);
+            opacity: 0;
+        }
+
+        /* Reset State (for scrolling back up) */
+        .hero-reset {
+            transform: translateX(0) scale(1);
+            opacity: 1;
+        }
+
+
+        /* AI SECTION TYPOGRAPHY */
+        .ai-title {
+            font-family: 'Inter', sans-serif;
+            letter-spacing: -0.02em;
+            transition: transform 0.4s ease-out;
+        }
+
+        .ai-title:hover {
+            transform: scale(1.02);
+        }
+
+        #ai-canvas {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+        }
+
+        #ai-text {
+            position: relative;
+            z-index: 2;
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- 2. MAIN CONTAINER: Fixed to viewport -->
+    <main id="main-container" style="position: fixed; inset: 0; width: 100%; height: 100vh;">
+
+        <!-- HERO SECTION -->
+        <section id="hero-section"
+            class="section-container section-active bg-white flex items-center justify-center px-6 py-12 md:px-12 lg:px-24">
+
+            <!-- Grid/Flex Container -->
+            <div
+                class="max-w-7xl w-full mx-auto flex flex-col md:flex-row items-center justify-between gap-12 md:gap-8">
+
+                <!-- LEFT SIDE: Text Content (Added ID) -->
+                <div id="hero-left-col"
+                    class="w-full md:w-1/2 flex flex-col items-start md:items-start text-left space-y-6 z-10">
+                    <div class="inline-block bg-brand-yellow px-4 py-2 transform -rotate-1">
+                        <span class="text-black font-bold text-sm md:text-base tracking-widest uppercase">Hello, I
+                            am</span>
+                    </div>
+                    <h1
+                        class="name-gradient text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-none cursor-default">
+                        ABDUL<br>
+                        <span>JAHEER</span>
+                    </h1>
+                    <p class="text-xl md:text-2xl font-medium text-gray-800 max-w-md leading-relaxed">
+                        Creative <span class="bg-brand-yellow bg-opacity-30">Developer</span> & UI Designer crafting
+                        high-end digital experiences.
+                    </p>
+                    <div class="pt-4">
+                        <a href="projects.html"
+                            class="group inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-black border-2 border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black hover:bg-brand-yellow hover:text-black hover:border-brand-yellow rounded-none">
+                            View My Work
+                            <svg class="w-6 h-6 ml-2 transition-transform duration-200 group-hover:translate-x-1"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- CENTER/RIGHT SIDE: Profile Image (Added ID) -->
+                <div id="hero-right-col"
+                    class="w-full md:w-1/2 flex flex-col justify-center items-center relative mt-8 md:mt-0">
+                    <div
+                        class="relative w-80 h-80 md:w-[500px] md:h-[500px] rounded-full border-[10px] md:border-[16px] border-black bg-brand-yellow shadow-2xl overflow-hidden flex items-center justify-center shrink-0 z-10">
+                        <img id="profile-image" src="profile_cutout_1768975874484.png" alt="Profile Portrait"
+                            class="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700 ease-out">
+                    </div>
+                    <div class="flex items-center gap-4 mt-6 md:-mt-8 z-20">
+                        <!-- Left Arrow -->
+                        <button id="prev-btn"
+                            class="w-14 h-14 bg-white border-4 border-black rounded-full flex items-center justify-center hover:bg-brand-yellow transition-colors duration-300 focus:outline-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                                stroke="currentColor" class="w-7 h-7 text-black">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                            </svg>
+                        </button>
+                        <!-- Right Arrow -->
+                        <button id="next-btn"
+                            class="w-14 h-14 bg-white border-4 border-black rounded-full flex items-center justify-center hover:bg-brand-yellow transition-colors duration-300 focus:outline-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                                stroke="currentColor" class="w-7 h-7 text-black">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div
+                        class="absolute bottom-20 -right-4 md:bottom-10 md:right-10 bg-white border-4 border-black px-6 py-3 rounded-full hidden md:block z-20">
+                        <span class="font-bold text-black text-lg">★ Available for hire</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI SECTION -->
+        <section id="ai-section" class="section-container section-hidden-down bg-white relative overflow-hidden">
+            <canvas id="ai-canvas" class="absolute inset-0 w-full h-full block"></canvas>
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+                <h2 id="ai-text"
+                    class="ai-title pointer-events-auto text-5xl md:text-7xl lg:text-8xl font-black text-black text-center leading-tight">
+                    AI-Integrated<br>
+                    Full Stack Developer
+                </h2>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- LOGIC SCRIPT -->
+    <script>
+        // 5. WHEEL-DRIVEN NAVIGATION SYSTEM (State Machine)
+
+        // State Definitions
+        const SECTIONS = {
+            HERO: 'hero',
+            AI: 'ai'
+        };
+
+        const heroSection = document.getElementById('hero-section');
+        const aiSection = document.getElementById('ai-section');
+
+        // Inner Content References
+        const heroLeft = document.getElementById('hero-left-col');
+        const heroRight = document.getElementById('hero-right-col');
+
+        // Initial State
+        let currentSectionState = SECTIONS.HERO;
+        let isTransitionLocked = false;
+
+        // Virtual Scroll Handler
+        window.addEventListener('wheel', (e) => {
+            // Hard Lock during transitions
+            if (isTransitionLocked) return;
+
+            const delta = e.deltaY;
+            const threshold = 30; // Min scroll amount to trigger
+
+            if (Math.abs(delta) < threshold) return; // Ignore small accidental scrolls
+
+            // Logic: Scroll DOWN -> Go to AI
+            if (delta > 0 && currentSectionState === SECTIONS.HERO) {
+                transitionTo(SECTIONS.AI);
+            }
+            // Logic: Scroll UP -> Go to Hero
+            else if (delta < 0 && currentSectionState === SECTIONS.AI) {
+                transitionTo(SECTIONS.HERO);
+            }
+        }, { passive: true });
+
+        function transitionTo(targetState) {
+            isTransitionLocked = true;
+            currentSectionState = targetState;
+
+            if (targetState === SECTIONS.AI) {
+                // --- SCROLL DOWN: Cinematic Split + Zoom ---
+
+                // 1. Prepare AI Section Entry (Start Zoomed In)
+                // We add the 'ai-zoom-enter' class BEFORE making it active to set starting transform
+                aiSection.classList.add('ai-zoom-enter', 'section-active');
+                aiSection.classList.remove('section-hidden-down', 'section-hidden-up');
+
+                // 2. Trigger AI Section Animation to Normal (Remove zoom class after short delay/frame)
+                // Force reflow
+                void aiSection.offsetWidth;
+                aiSection.classList.remove('ai-zoom-enter');
+                // Now it transitions to .section-active styles (scale 1) naturally
+
+                // 3. Animate Hero Exit (Split)
+                // Use 'hero-split-exit' to prevent slide up
+                heroSection.classList.add('hero-split-exit');
+                heroSection.classList.remove('section-active');
+
+                // Apply Inner Splits
+                heroLeft.classList.add('hero-exit-left');
+                heroLeft.classList.remove('hero-reset');
+                heroRight.classList.add('hero-exit-right');
+                heroRight.classList.remove('hero-reset');
+
+            } else {
+                // --- SCROLL UP: Reset to Hero ---
+
+                // 1. Reset Hero Container
+                heroSection.classList.remove('hero-split-exit', 'section-hidden-up');
+                heroSection.classList.add('section-active');
+
+                // 2. Reset Inner Content (Fly back in)
+                heroLeft.classList.remove('hero-exit-left');
+                heroLeft.classList.add('hero-reset');
+                heroRight.classList.remove('hero-exit-right');
+                heroRight.classList.add('hero-reset');
+
+                // 3. Hide AI Section (Slide Down or Fade out)
+                aiSection.classList.remove('section-active');
+                aiSection.classList.add('section-hidden-down');
+            }
+
+            // Unlock after transition
+            setTimeout(() => {
+                isTransitionLocked = false;
+            }, 1200);
+        }
+
+
+        // --- SLIDER LOGIC (Preserved) ---
+        const images = [
+            "profile_cutout_1768975874484.png",
+            "profile_cutout_2_1768978527432.png",
+            "profile_cutout_3_1768978558877.png"
+        ];
+        let currentIndex = 0;
+        const profileImage = document.getElementById("profile-image");
+        const prevBtn = document.getElementById("prev-btn");
+        const nextBtn = document.getElementById("next-btn");
+
+        profileImage.style.transition = "opacity 0.5s ease-in-out, transform 0.7s ease-out";
+
+        function updateImage() {
+            profileImage.style.opacity = '0';
+            setTimeout(() => {
+                profileImage.src = images[currentIndex];
+                requestAnimationFrame(() => {
+                    profileImage.style.opacity = '1';
+                });
+            }, 500);
+        }
+
+        nextBtn.addEventListener("click", () => {
+            currentIndex = (currentIndex + 1) % images.length;
+            updateImage();
+        });
+
+        prevBtn.addEventListener("click", () => {
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            updateImage();
+        });
+
+        // --- CANVAS LOGIC (Preserved) ---
+        const canvas = document.getElementById('ai-canvas');
+        const ctx = canvas.getContext('2d');
+        const aiText = document.getElementById('ai-text');
+
+        let width, height;
+        let particles = [];
+        const particleCount = 80;
+        const connectionDistance = 150;
+        const mouseDistance = 200;
+
+        let mouse = { x: undefined, y: undefined };
+        let isTextHovered = false;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            initParticles();
+        }
+        window.addEventListener('resize', resize);
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.8;
+                this.vy = (Math.random() - 0.5) * 0.8;
+                this.size = Math.random() * 3 + 1;
+                this.color = '#000000';
+                this.baseColor = '#000000';
+                this.accentColor = '#facc15';
+            }
+
+            update() {
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < mouseDistance) {
+                    this.color = this.accentColor;
+                    this.size = Math.min(this.size + 0.1, 5);
+                } else {
+                    this.color = this.baseColor;
+                    if (this.size > 2) this.size -= 0.1;
+                }
+
+                if (!isTextHovered) {
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    if (this.x < 0 || this.x > width) this.vx *= -1;
+                    if (this.y < 0 || this.y > height) this.vy *= -1;
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function connectParticles() {
+            for (let a = 0; a < particles.length; a++) {
+                for (let b = a; b < particles.length; b++) {
+                    let dx = particles[a].x - particles[b].x;
+                    let dy = particles[a].y - particles[b].y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < connectionDistance) {
+                        let opacityValue = 1 - (distance / connectionDistance);
+                        ctx.strokeStyle = `rgba(0,0,0,${opacityValue * 0.2})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[a].x, particles[a].y);
+                        ctx.lineTo(particles[b].x, particles[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            connectParticles();
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('mousemove', (e) => {
+            if (currentSectionState === SECTIONS.AI) {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+            } else {
+                mouse.x = undefined;
+                mouse.y = undefined;
+            }
+        });
+
+        aiText.addEventListener('mouseenter', () => { isTextHovered = true; });
+        aiText.addEventListener('mouseleave', () => { isTextHovered = false; });
+
+        resize();
+        animate();
+
+    </script>
+</body>
+
+</html>

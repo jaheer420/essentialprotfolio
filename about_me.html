@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Me | Abdul Jaheer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'cinema-red': '#c40000',
+                        'dream-yellow': '#FFD700',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Oswald', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Oswald:wght@500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Custom Keyframes */
+        @keyframes revealLetter {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            10%,
+            90% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
+
+        @keyframes growLine {
+            0% {
+                height: 0;
+                opacity: 0;
+            }
+
+            15% {
+                height: 60px;
+                opacity: 1;
+            }
+
+            85% {
+                height: 60px;
+                opacity: 1;
+            }
+
+            100% {
+                height: 0;
+                opacity: 0;
+            }
+        }
+
+        @keyframes slideKeyword {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            20% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            80% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Animation Classes with Staggering */
+        .dream-letter {
+            opacity: 0;
+            animation: revealLetter 8s ease-in-out infinite;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .dream-line {
+            opacity: 0;
+            animation: growLine 8s ease-in-out infinite;
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+        }
+
+        .dream-word {
+            opacity: 0;
+            animation: slideKeyword 8s ease-in-out infinite;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Delays for Staggered Effect (D-R-E-A-M) */
+        .delay-1 {
+            animation-delay: 0s;
+        }
+
+        .delay-2 {
+            animation-delay: 1.5s;
+        }
+
+        .delay-3 {
+            animation-delay: 3s;
+        }
+
+        .delay-4 {
+            animation-delay: 4.5s;
+        }
+
+        .delay-5 {
+            animation-delay: 6s;
+        }
+
+        /* Glass effect for text card */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+            border-left: 4px solid #FFD700;
+        }
+
+        /* MOBILE-ONLY: Reduce neural network visibility on small screens */
+        @media (max-width: 767px) {
+            #neural-canvas {
+                opacity: 0.3;
+            }
+        }
+    </style>
+</head>
+
+<body
+    class="bg-cinema-red m-0 p-0 overflow-x-hidden overflow-y-auto md:overflow-hidden min-h-screen md:h-screen text-white font-sans antialiased selection:bg-dream-yellow selection:text-cinema-red">
+
+    <!-- NEURAL NETWORK CANVAS (Background Layer) -->
+    <canvas id="neural-canvas" class="fixed inset-0 w-full h-full z-0 pointer-events-none"></canvas>
+
+    <!-- Main Container: Split Layout (MOBILE: Vertical Stack, DESKTOP: Side-by-Side) -->
+    <main class="flex flex-col md:flex-row w-full min-h-screen md:h-full relative">
+
+        <!-- LEFT SIDE: Text Content (MOBILE: Full width, DESKTOP: 40%) -->
+        <section
+            class="w-full md:w-[40%] min-h-[60vh] md:h-full flex flex-col justify-center px-4 py-8 md:px-16 md:py-0 z-20 relative order-1">
+            <div class="glass-panel p-8 rounded-r-xl shadow-2xl animate-[fadeIn_1.5s_ease-out]">
+                <h5 class="text-dream-yellow font-display font-bold tracking-widest uppercase mb-2 text-sm">About Me
+                </h5>
+                <h1 class="text-3xl md:text-5xl font-bold mb-2 tracking-tight">Abdul Jaheer</h1>
+                <h2 class="text-base md:text-xl text-gray-200 mb-4 md:mb-6 font-light">Full-Stack Web Developer <span
+                        class="mx-1 md:mx-2 opacity-50">|</span> India</h2>
+
+                <p
+                    class="text-gray-100 leading-relaxed mb-4 md:mb-6 opacity-90 max-w-md font-light text-xs md:text-base">
+                    Highly motivated and creative Ai-Integrated Full-Stack Web Developer with hands-on experience in
+                    building
+                    responsive web applications using HTML, CSS, JavaScript, React.js, PHP, Python, and MySQL.
+                    Passionate about clean code, interactive UI design, and continuous learning. Focused on discipline,
+                    routine, education, action, and growth mindset.
+                </p>
+
+                <div class="space-y-2 md:space-y-3 border-t border-white/20 pt-4 md:pt-6">
+                    <h3 class="text-dream-yellow font-display text-sm uppercase tracking-wide">Skills Highlights</h3>
+                    <ul class="grid grid-cols-2 gap-1 md:gap-2 text-xs md:text-sm font-light text-gray-200">
+                        <li class="flex items-center"><span
+                                class="w-1.5 h-1.5 rounded-full bg-dream-yellow mr-2"></span>HTML, CSS, JS (ES6+)</li>
+                        <li class="flex items-center"><span
+                                class="w-1.5 h-1.5 rounded-full bg-dream-yellow mr-2"></span>React.js, Node.js</li>
+                        <li class="flex items-center"><span
+                                class="w-1.5 h-1.5 rounded-full bg-dream-yellow mr-2"></span>PHP, MySQL</li>
+                        <li class="flex items-center"><span
+                                class="w-1.5 h-1.5 rounded-full bg-dream-yellow mr-2"></span>UI Animation</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- RIGHT SIDE: Visuals + Animation (MOBILE: Full width, DESKTOP: 60%) -->
+        <section
+            class="w-full md:w-[60%] min-h-[40vh] md:h-full relative flex flex-col items-center justify-center z-10 order-2 py-8 md:py-0">
+
+            <!-- DREAM Concept Animation (MOBILE: Centered, smaller spacing) -->
+            <div id="dream-container"
+                class="relative md:absolute md:top-1/4 w-full flex justify-center space-x-4 md:space-x-16 z-20 px-2">
+                <!-- D: Discipline -->
+                <div id="step-1" class="flex flex-col items-center group transition-all duration-300">
+                    <div class="text-4xl md:text-8xl font-display font-bold text-dream-yellow dream-letter delay-1">D
+                    </div>
+                    <div class="w-0.5 bg-dream-yellow dream-line delay-1 mt-2"></div>
+                    <div
+                        class="mt-2 md:mt-4 font-display tracking-widest uppercase text-[10px] md:text-lg text-dream-yellow dream-word delay-1">
+                        Discipline</div>
+                </div>
+
+                <!-- R: Routine -->
+                <div id="step-2" class="flex flex-col items-center group transition-all duration-300">
+                    <div class="text-4xl md:text-8xl font-display font-bold text-dream-yellow dream-letter delay-2">R
+                    </div>
+                    <div class="w-0.5 bg-dream-yellow dream-line delay-2 mt-2"></div>
+                    <div
+                        class="mt-2 md:mt-4 font-display tracking-widest uppercase text-[10px] md:text-lg text-dream-yellow dream-word delay-2">
+                        Routine</div>
+                </div>
+
+                <!-- E: Education -->
+                <div id="step-3" class="flex flex-col items-center group transition-all duration-300">
+                    <div class="text-4xl md:text-8xl font-display font-bold text-dream-yellow dream-letter delay-3">E
+                    </div>
+                    <div class="w-0.5 bg-dream-yellow dream-line delay-3 mt-2"></div>
+                    <div
+                        class="mt-2 md:mt-4 font-display tracking-widest uppercase text-[10px] md:text-lg text-dream-yellow dream-word delay-3">
+                        Education</div>
+                </div>
+
+                <!-- A: Action -->
+                <div id="step-4" class="flex flex-col items-center group transition-all duration-300">
+                    <div class="text-4xl md:text-8xl font-display font-bold text-dream-yellow dream-letter delay-4">A
+                    </div>
+                    <div class="w-0.5 bg-dream-yellow dream-line delay-4 mt-2"></div>
+                    <div
+                        class="mt-2 md:mt-4 font-display tracking-widest uppercase text-[10px] md:text-lg text-dream-yellow dream-word delay-4">
+                        Action</div>
+                </div>
+
+                <!-- M: Mentality -->
+                <div id="step-5" class="flex flex-col items-center group transition-all duration-300">
+                    <div class="text-4xl md:text-8xl font-display font-bold text-dream-yellow dream-letter delay-5">M
+                    </div>
+                    <div class="w-0.5 bg-dream-yellow dream-line delay-5 mt-2"></div>
+                    <div
+                        class="mt-2 md:mt-4 font-display tracking-widest uppercase text-[10px] md:text-lg text-dream-yellow dream-word delay-5">
+                        Mentality</div>
+                </div>
+            </div>
+
+
+            <!-- Background subtle geometric elements for depth (MOBILE: Hidden for cleaner look) -->
+            <div class="absolute inset-0 z-0 opacity-10 pointer-events-none hidden md:block">
+                <div
+                    class="absolute top-[10%] right-[10%] w-64 h-64 border border-white rounded-full mix-blend-overlay">
+                </div>
+                <div
+                    class="absolute bottom-[20%] left-[50%] w-96 h-96 border border-dream-yellow rounded-full mix-blend-overlay">
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- NEURAL NETWORK JAVASCRIPT -->
+    <script>
+            (function () {
+                // === CONFIGURATION ===
+                const NODE_COUNT = 80;
+                const CONNECTION_DISTANCE = 150;
+                const CURSOR_REVEAL_RADIUS = 200;
+                const NODE_SPEED = 0.3;
+
+                // === STATE ===
+                let canvas, ctx;
+                let nodes = [];
+                let mouse = { x: -1000, y: -1000 };
+                let isDreamHovered = false;
+                let globalOpacity = 0; // For smooth fade transitions
+
+                // === INITIALIZATION ===
+                function init() {
+                    canvas = document.getElementById('neural-canvas');
+                    ctx = canvas.getContext('2d');
+                    resize();
+                    createNodes();
+                    setupEventListeners();
+                    animate();
+                }
+
+                function resize() {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                }
+
+                function createNodes() {
+                    nodes = [];
+                    for (let i = 0; i < NODE_COUNT; i++) {
+                        nodes.push({
+                            x: Math.random() * canvas.width,
+                            y: Math.random() * canvas.height,
+                            vx: (Math.random() - 0.5) * NODE_SPEED,
+                            vy: (Math.random() - 0.5) * NODE_SPEED,
+                            radius: Math.random() * 2 + 1
+                        });
+                    }
+                }
+
+                // === EVENT LISTENERS ===
+                function setupEventListeners() {
+                    window.addEventListener('resize', () => {
+                        resize();
+                        createNodes();
+                    });
+
+                    document.addEventListener('mousemove', (e) => {
+                        mouse.x = e.clientX;
+                        mouse.y = e.clientY;
+                    });
+
+                    document.addEventListener('mouseleave', () => {
+                        mouse.x = -1000;
+                        mouse.y = -1000;
+                    });
+
+                    // DREAM letter hover detection
+                    const dreamContainer = document.getElementById('dream-container');
+                    if (dreamContainer) {
+                        dreamContainer.addEventListener('mouseenter', () => {
+                            isDreamHovered = true;
+                        });
+                        dreamContainer.addEventListener('mouseleave', () => {
+                            isDreamHovered = false;
+                        });
+                    }
+                }
+
+                // === ANIMATION LOOP ===
+                function animate() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    // Smooth opacity transition
+                    const targetOpacity = isDreamHovered ? 0.6 : 0;
+                    globalOpacity += (targetOpacity - globalOpacity) * 0.05;
+
+                    updateNodes();
+                    drawConnections();
+                    drawNodes();
+
+                    requestAnimationFrame(animate);
+                }
+
+                function updateNodes() {
+                    for (let node of nodes) {
+                        node.x += node.vx;
+                        node.y += node.vy;
+
+                        // Bounce off edges
+                        if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
+                        if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
+
+                        // Keep in bounds
+                        node.x = Math.max(0, Math.min(canvas.width, node.x));
+                        node.y = Math.max(0, Math.min(canvas.height, node.y));
+                    }
+                }
+
+                function getNodeOpacity(node) {
+                    // If DREAM is hovered, use global opacity
+                    if (isDreamHovered) {
+                        return globalOpacity;
+                    }
+
+                    // Otherwise, reveal based on cursor proximity
+                    const dx = node.x - mouse.x;
+                    const dy = node.y - mouse.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < CURSOR_REVEAL_RADIUS) {
+                        return (1 - dist / CURSOR_REVEAL_RADIUS) * 0.8;
+                    }
+                    return 0;
+                }
+
+                function drawConnections() {
+                    for (let i = 0; i < nodes.length; i++) {
+                        for (let j = i + 1; j < nodes.length; j++) {
+                            const dx = nodes[i].x - nodes[j].x;
+                            const dy = nodes[i].y - nodes[j].y;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+
+                            if (dist < CONNECTION_DISTANCE) {
+                                const opacity1 = getNodeOpacity(nodes[i]);
+                                const opacity2 = getNodeOpacity(nodes[j]);
+                                const lineOpacity = Math.min(opacity1, opacity2) * (1 - dist / CONNECTION_DISTANCE);
+
+                                if (lineOpacity > 0.01) {
+                                    ctx.beginPath();
+                                    ctx.moveTo(nodes[i].x, nodes[i].y);
+                                    ctx.lineTo(nodes[j].x, nodes[j].y);
+                                    ctx.strokeStyle = `rgba(255, 255, 255, ${lineOpacity})`;
+                                    ctx.lineWidth = 0.5;
+                                    ctx.stroke();
+                                }
+                            }
+                        }
+                    }
+                }
+
+                function drawNodes() {
+                    for (let node of nodes) {
+                        const opacity = getNodeOpacity(node);
+
+                        if (opacity > 0.01) {
+                            ctx.beginPath();
+                            ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+                            ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+                            ctx.fill();
+
+                            // Subtle glow
+                            ctx.beginPath();
+                            ctx.arc(node.x, node.y, node.radius + 2, 0, Math.PI * 2);
+                            ctx.fillStyle = `rgba(255, 255, 255, ${opacity * 0.3})`;
+                            ctx.fill();
+                        }
+                    }
+                }
+
+                // Start when DOM is ready
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', init);
+                } else {
+                    init();
+                }
+            })();
+    </script>
+</body>
+
+</html>

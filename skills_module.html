@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinematic Skills Section</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            background: #050505;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont,
+                "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .skills-section {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #skills-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            filter: contrast(1.15) brightness(1.1) saturate(1.2);
+            opacity: 0;
+            transition: opacity 1.5s ease-out;
+        }
+
+        #skills-canvas.loaded {
+            opacity: 1;
+        }
+
+        /* ✅ CLEAN CINEMATIC OVERLAY (NO SCANLINES) */
+        .overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            background:
+                radial-gradient(circle at center,
+                    transparent 45%,
+                    rgba(0, 0, 0, 0.9) 100%);
+            pointer-events: none;
+        }
+
+        .content-layer {
+            position: relative;
+            z-index: 3;
+            width: 90%;
+            max-width: 1200px;
+            height: 100%;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        header {
+            margin-bottom: auto;
+            padding-top: 4rem;
+            animation: fadeDown 1s ease-out .5s both;
+        }
+
+        h2.section-title {
+            font-size: 1rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #4a90e2;
+            margin-bottom: 1rem;
+            display: inline-block;
+            position: relative;
+        }
+
+        h2.section-title::after {
+            content: '';
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            width: 40px;
+            height: 1px;
+            background: #4a90e2;
+            margin-left: 15px;
+            opacity: .7;
+        }
+
+        h1.main-heading {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            background: linear-gradient(135deg, #fff, #a5a5a5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        p.subtitle {
+            max-width: 520px;
+            color: rgba(255, 255, 255, .7);
+            line-height: 1.6;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: auto;
+            margin-bottom: 4rem;
+        }
+
+        .skill-item {
+            background: rgba(255, 255, 255, .03);
+            border: 1px solid rgba(255, 255, 255, .1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            opacity: 0;
+            animation: fadeUp 1s ease-out both;
+            transition: .4s;
+        }
+
+        .skill-item:nth-child(1) {
+            animation-delay: .2s
+        }
+
+        .skill-item:nth-child(2) {
+            animation-delay: .4s
+        }
+
+        .skill-item:nth-child(3) {
+            animation-delay: .6s
+        }
+
+        .skill-item:hover {
+            transform: translateY(-6px);
+            background: rgba(255, 255, 255, .08);
+            border-color: rgba(74, 144, 226, .5);
+        }
+
+        .loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            font-size: .8rem;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, .5);
+            transition: opacity .5s;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        @keyframes fadeDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        @media (max-width: 768px) {
+            .skills-grid {
+                grid-template-columns: 1fr
+            }
+
+            .content-layer {
+                text-align: center
+            }
+
+            h2.section-title::after {
+                display: none
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <section class="skills-section">
+        <canvas id="skills-canvas"></canvas>
+        <div class="overlay"></div>
+        <div id="loader" class="loader">Loading Skills... 0%</div>
+
+        <div class="content-layer">
+            <header>
+                <h2 class="section-title"></h2>
+                <h1 class="main-heading"><br></h1>
+                <p class="subtitle">
+
+                </p>
+            </header>
+
+
+            </div>
+        </div>
+    </section>
+
+    <script>
+        class ImageSequencePlayer {
+            constructor(canvasId, imageBasePath, frameCount, frameRate = 30) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+
+                this.imageBasePath = imageBasePath;
+                this.frameCount = frameCount;
+                this.frameRate = frameRate;
+
+                this.images = [];
+                this.imagesLoaded = 0;
+                this.currentFrame = 0;
+                this.lastTime = 0;
+                this.isPlaying = false;
+                this.isVisible = true;
+
+                this.resize = this.resize.bind(this);
+                this.loop = this.loop.bind(this);
+
+                this.init();
+            }
+
+            async init() {
+                this.resize();
+                window.addEventListener('resize', this.resize);
+
+                await this.preloadImages();
+                this.drawFrame(0);
+                this.setupObserver();
+
+                this.canvas.classList.add('loaded');
+                document.getElementById('loader').classList.add('hidden');
+
+                this.start();
+            }
+
+            preloadImages() {
+                return new Promise(resolve => {
+                    for (let i = 0; i < this.frameCount; i++) {
+                        const img = new Image();
+                        const index = i.toString().padStart(3, '0');
+                        img.src = `${this.imageBasePath}${index}.jpg`;
+
+                        img.onload = img.onerror = () => {
+                            this.imagesLoaded++;
+                            this.updateLoader();
+                            if (this.imagesLoaded === this.frameCount) resolve();
+                        };
+
+                        this.images[i] = img;
+                    }
+                });
+            }
+
+            updateLoader() {
+                const p = Math.round((this.imagesLoaded / this.frameCount) * 100);
+                const loader = document.getElementById('loader');
+                if (loader) loader.textContent = `Loading Skills... ${p}%`;
+            }
+
+            setupObserver() {
+                const observer = new IntersectionObserver(entries => {
+                    this.isVisible = entries[0].isIntersecting;
+                }, { threshold: 0.1 });
+
+                observer.observe(this.canvas);
+            }
+
+            resize() {
+                this.canvas.width = innerWidth;
+                this.canvas.height = innerHeight;
+                this.drawFrame(this.currentFrame);
+            }
+
+            start() {
+                this.isPlaying = true;
+                this.lastTime = performance.now();
+                requestAnimationFrame(this.loop);
+            }
+
+            drawFrame(i) {
+                const img = this.images[i];
+                if (!img || !img.complete) return;
+
+                const cw = this.canvas.width;
+                const ch = this.canvas.height;
+                const r = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
+
+                const nw = img.naturalWidth * r;
+                const nh = img.naturalHeight * r;
+
+                this.ctx.drawImage(img, (cw - nw) / 2, (ch - nh) / 2, nw, nh);
+            }
+
+            loop(t) {
+                if (!this.isPlaying) return;
+                requestAnimationFrame(this.loop);
+
+                if (!this.isVisible) return;
+
+                const interval = 1000 / this.frameRate;
+                const delta = t - this.lastTime;
+
+                if (delta >= interval) {
+                    this.currentFrame = (this.currentFrame + 1) % this.frameCount;
+                    this.drawFrame(this.currentFrame);
+                    this.lastTime = t - (delta % interval);
+                }
+            }
+        }
+
+        const CONFIG = {
+            basePath: 'ask/WhatsApp Video 2026-01-26 at 10.32.30 AM_',
+            frameCount: 63,
+            fps: 14
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new ImageSequencePlayer(
+                'skills-canvas',
+                CONFIG.basePath,
+                CONFIG.frameCount,
+                CONFIG.fps
+            );
+        });
+    </script>
+
+</body>
+
+</html>
